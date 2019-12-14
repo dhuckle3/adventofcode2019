@@ -3,9 +3,12 @@ const os = require('os');
 
 const {
     addSegment,
+    addLine,
     getAllIntersections,
     getIntersection
-}= require('./wire-diagram/diagram'); 
+} = require('./wire-diagram/diagram'); 
+
+const WireDiagram = require('./wire-diagram/wirediagram');
 
 test('day3 sample input 1 produces correct results', () => {
     const line1 = 'R75,D30,R83,U83,L12,D49,R71,U7,L72';
@@ -80,6 +83,16 @@ test('part 2 input', () => {
     }); 
 
     const intersections = getAllIntersections(grid);    
-    console.log(intersections);
+});
+
+test('part 2 wirediagram', () => {
+    const data = fs.readFileSync('./data/input03.txt', 'utf-8');
+    const source = data.split(os.EOL);
+    const grid = {};
+    let cursor = '0,0';
+    var wd = new WireDiagram();
+    wd.addWire(source[0]);
+    wd.addWire(source[1]);
+    expect(wd.findSmallestTravelDistance()).toBe('4537,-1239');
 });
 

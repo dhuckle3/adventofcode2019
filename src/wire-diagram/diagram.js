@@ -1,12 +1,6 @@
-class WireDiagram {
-    constructor() {
-        this.grid = {}
-    }
-}    
-
-const addSegment = function(grid, cursor, marker, operation) {
-    const direction = operation[0];
-    const length = parseInt(operation.substring(1));
+const walkSegment = function(grid, cursor, segment, operation) {
+    const direction = segment[0];
+    const length = parseInt(segment.substring(1));
     const x = parseInt(cursor.split(',')[0]);
     const y = parseInt(cursor.split(',')[1]);
 
@@ -25,17 +19,34 @@ const addSegment = function(grid, cursor, marker, operation) {
                 cursor = (x + i + 1) + ',' + y;
                 break;
         }
+        operation(grid, cursor);
+    } 
+    return cursor;
+}
+
+const addLine = function(grid, marker, segments) {
+    let cursor = '0,0';
+    let line = []
+    segments.split(',').forEach((segment) => {
+        walkSegment(grid, cursor, segment, (grid, operation) => {
+            if (!grid[cursor]) {
+                grid[cursor] = []
+            }
+            grid[cursor].push(marker);
+            grid[cursor] = Array.from(new Set(grid[cursor]));
+        });
+        console.log(segment, grid);
+    });
+}
+
+const addSegment = function(grid, cursor, marker, operation) {
+    return walkSegment(grid, cursor, operation, (grid, cursor) => {
         if (!grid[cursor]) {
             grid[cursor] = []
         }
         grid[cursor].push(marker);
         grid[cursor] = Array.from(new Set(grid[cursor]));
-    } 
-    return cursor;
-}
-
-const followPath = function(grid, cursor, path) {
-    
+    });
 }
 
 const manhattenDist = function(x, y) {
@@ -93,9 +104,9 @@ const getBounds = function(grid) {
 }
 
 module.exports = { 
-    getBounds,
     addSegment,
+    addLine,
     getAllIntersections,
-    getIntersection,
-    WireDiagram
+    getBounds,
+    getIntersection
 };
